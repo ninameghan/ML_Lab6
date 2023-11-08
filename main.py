@@ -1,16 +1,16 @@
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.datasets import load_iris
-from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
-from sklearn.model_selection import train_test_split # Import train_test_split function
-from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import metrics
 from sklearn.model_selection import KFold
+from sklearn import tree
 
 
 def main():
     task_1()
     plt.show()
+    task_2()
 
 
 def task_1():
@@ -46,6 +46,27 @@ def task_1():
 
     best_depth = np.argmax(avg_acc_test) + 1
     print("Best depth:", best_depth)
+
+
+def task_2():
+    iris = load_iris()
+
+    for i in range(1, 6):
+        # create decision tree classifier object
+        clf = DecisionTreeClassifier(max_depth=i)
+
+        # train classifier
+        clf = clf.fit(iris.data, iris.target)
+
+        # visualise decision tree
+        plt.figure()
+        tree.plot_tree(clf,
+                       feature_names=iris.feature_names,
+                       class_names=["Setosa", "Versicolor", "Virginica"],
+                       rounded=True,
+                       filled=True,
+                       proportion=True)
+        plt.show()
 
 
 main()
