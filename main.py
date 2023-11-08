@@ -1,16 +1,51 @@
-# This is a sample Python script.
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier # Import Decision Tree Classifier
+from sklearn.model_selection import train_test_split # Import train_test_split function
+from sklearn import metrics #Import scikit-learn metrics module for accuracy calculation
+from sklearn.model_selection import KFold
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+
+def main():
+    task_1()
+    plt.show()
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def task_1():
+    iris = load_iris()
+    X = iris.data
+    y = iris.target
+
+    kf = KFold(n_splits=len(iris.target))
+    avg_acc_train = []
+    avg_acc_test = []
+
+    for i in range(1, 6):
+        # create decision tree classifier object
+        clf = DecisionTreeClassifier(max_depth=i)
+        acc_train = []
+        acc_test = []
+
+        for train_index, test_index in kf.split(iris.data):
+            # train classifier
+            clf = clf.fit(iris.data[train_index], iris.target[train_index])
+
+            # predict response for test data
+            prediction_train = clf.predict(iris.data[train_index])
+            prediction_test = clf.predict(iris.data[test_index])
+            acc_train.append(metrics.accuracy_score(iris.target[train_index], prediction_train))
+            acc_test.append(metrics.accuracy_score(iris.target[test_index], prediction_test))
+        avg_acc_train.append(np.mean(acc_train))
+        avg_acc_test.append(np.mean(acc_test))
+
+    plt.figure()
+    plt.plot(np.arange(len(avg_acc_test)) + 1, avg_acc_test)
+    plt.plot(np.arange(len(avg_acc_train)) + 1, avg_acc_train)
+
+    best_depth = np.argmax(avg_acc_test) + 1
+    print("Best depth:", best_depth)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+main()
