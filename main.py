@@ -9,8 +9,9 @@ from sklearn import tree
 
 def main():
     task_1()
-    plt.show()
     task_2()
+    task3()
+    plt.show()
 
 
 def task_1():
@@ -66,7 +67,31 @@ def task_2():
                        rounded=True,
                        filled=True,
                        proportion=True)
-        plt.show()
+
+
+def task3():
+    iris = load_iris()
+    min_ = np.min(iris.data, axis=0)
+    max_ = np.max(iris.data, axis=0)
+    granularity = (max_ - min_) / 100
+    g2, g3 = np.meshgrid(np.arange(min_[2], max_[2], granularity[2]),
+                         np.arange(min_[3], max_[3], granularity[3]))
+    g0 = np.ones(g2.shape) * (min_[0] + max_[0]) / 2
+    g1 = np.ones(g2.shape) * (min_[1] + max_[1]) / 2
+    xy = np.array([g0.flatten(), g1.flatten(), g2.flatten(), g3.flatten()]).transpose()
+
+    for i in range(1, 6):
+        clf = tree.DecisionTreeClassifier(max_depth=i, random_state=0)
+        clf.fit(iris.data, iris.target)
+        prediction = clf.predict(xy)
+        prediction = prediction.reshape(g2.shape)
+
+        plt.figure()
+        plt.imshow(prediction, extent=(min_[2], max_[2], min_[3], max_[3]),
+                   alpha=0.4, origin="lower")
+        plt.scatter(iris.data[:, 2], iris.data[:, 3], c=iris.target)
+
+    return
 
 
 main()
